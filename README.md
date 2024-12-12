@@ -7,3 +7,6 @@ It is also recommended to make use of a virtual enviroment for this.
 --> python -m venv /path/to/new/virtual/environment
 
 Refer to traffic_visualization.py for individual image testing 
+
+Tensorboard model view: 
+tensorboard --logdir logs\fit\
