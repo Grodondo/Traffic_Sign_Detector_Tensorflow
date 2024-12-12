@@ -4,6 +4,9 @@ import os
 import sys
 import tensorflow as tf
 
+from tensorflow.keras.callbacks import TensorBoard
+import datetime
+
 from sklearn.model_selection import train_test_split
 
 EPOCHS = 10
@@ -31,8 +34,12 @@ def main():
     # Get a compiled neural network
     model = get_model()
 
+    # Tensorboard
+    log_dir = "logs/fit/" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+    tensorboard_callback = TensorBoard(log_dir=log_dir, histogram_freq=1)
+
     # Fit model on training data
-    model.fit(x_train, y_train, epochs=EPOCHS)
+    model.fit(x_train, y_train, epochs=EPOCHS, callbacks=[tensorboard_callback])
 
     # Evaluate neural network performance
     model.evaluate(x_test, y_test, verbose=2)
@@ -40,7 +47,7 @@ def main():
     # Save model to file
     if len(sys.argv) == 3:
         filename = sys.argv[2]
-        model.save(filename)
+        model.save(os.path.join("models", filename))
         print(f"Model saved to {filename}.")
 
 
@@ -108,6 +115,7 @@ def get_model():
     )
 
     """
+
     model = tf.keras.models.Sequential(
         [
             # Convolutional layer. Learn 32 filters using a 3x3 kernel
@@ -129,12 +137,6 @@ def get_model():
             tf.keras.layers.Dense(NUM_CATEGORIES, activation="softmax"),
         ]
     )
-
-    """
-    model = tf.keras.models.Sequential()
-    model.add(tf.keras.layers.Flatten(input_shape=(30, 30, 3)))
-    model.add(tf.keras.layers.Dense(NUM_CATEGORIES, activation="relu"))
-    """
 
     model.compile(optimizer="adam", loss="binary_crossentropy", metrics=["accuracy"])
 
